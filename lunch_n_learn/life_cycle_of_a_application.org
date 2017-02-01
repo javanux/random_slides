@@ -3,7 +3,8 @@
 #+OPTIONS: author:nil num:nil toc:nil date:nil
 #+OPTIONS: reveal_rolling_links:t org-reveal-title-slide
 #+REVEAL_THEME: league
-#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+#+OPTIONS: reveal_single_file:t
+
 
 * Agenda
  - Planning for the application/server
