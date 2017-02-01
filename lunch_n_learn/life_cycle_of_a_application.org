@@ -3,53 +3,49 @@
 #+OPTIONS: author:nil num:nil toc:nil date:nil
 #+OPTIONS: reveal_rolling_links:t org-reveal-title-slide
 #+REVEAL_THEME: league
-#+OPTIONS: reveal_single_file:t
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/reveal.js/3.0.0/
 
-
-* Agenda
- - Planning for the application/server
- - Deployment
- - Sprouting a application
- - Harvesting and Retirement
-* Motivation behind Learn after Lunch
+* Motivation behind Lunch and Learn
   #+ATTR_REVEAL: :frag (roll-in)
-  #+REVEAL_DEFAULT_FRAG_STYLE: :frag (highlight-red)
-  - Raising the Awarness
-  - Brief explanation on how we build a app/(server)
-  - Make you guys sleep
-  - I was forced 🔫 but then I wanted to.[[./do_your_work.png]]
+ - Knowledge sharing and discussion
+ - I was forced 🔫
 * Requirements Gathering
 ** General Information
    #+ATTR_REVEAL: :frag (roll-in)
-   - app/service name
-   - security groups
-   - environment
-   - instance type
+   - Application Name
+   - Security Groups
+   - Environment
+   - Instance Type
    - VPC/NonVPC
-   - ELB
+   - DNS name
 ** Ruby Specifications
-   - ruby version
-   - framework
-   - app server(unicorn,puma)
+   - Ruby Version
+   - Framework
+   - App Server(unicorn,puma)
+   - hutch/sidekiq
 ** system depenencies
-
-   - nodejs (rocketchat)
-   - imagemagick (mediaengine)
+   #+ATTR_REVEAL: :frag (roll-in)
+   - ruby
+   - imagemagick
+   - nodejs
    - libpq-dev
-    #+ATTR_REVEAL: :frag (roll-in)
     #+BEGIN_SRC shell :results drawer :exports both
-    apt show libpq-dev| grep -A5 -i 'description'
+    apt show libpq-dev | grep -A5 -i 'description'
     #+END_SRC
-    #+ATTR_REVEAL: :frag (roll-in)
-    #+BEGIN_EXAMPLE
-    Description: header files for libpq5 (PostgreSQL library)
-     Header files and static library for compiling C programs to link
-     with the libpq library in order to communicate with a PostgreSQL
-     database backend.
-    #+END_EXAMPLE
 
+    #+BEGIN_SRC c
+    Description: header files for libpq5 (PostgreSQL library) 
+    Header files and static library for compiling C programs to
+    link with the libpq library in order to communicate with a 
+    PostgreSQL database backend.
+    #+END_SRC
+** service level dependencies
+   - MySql
+   - Redis/Memcache
+   - RabbitMQ
+   - Mongo
 * YML Conversion
-**  vars sections
+** vars sections
     #+BEGIN_SRC yaml
       application: cfclient
       environments:
@@ -75,9 +71,8 @@
       EC2SPIN_ROLE: app
       EC2SPIN_ENV: staging
     #+END_SRC
-#+REVEAL_MARGIN: 0.1,0.4
  #+REVEAL_MARGIN: 0.2,0.1
-**  playbook sections
+** playbook sections
     #+BEGIN_SRC yaml
       ---
       - name: From prebaked AMI to full-blown server
@@ -107,6 +102,7 @@
 
           - role: runit
     #+END_SRC
+
 * Configuration Part of the CodeBase
 ** Gems
    - unicorn
@@ -119,15 +115,22 @@
    - newrelic.yml
    - hutch.yml
    - redis.yml.. etc
+** service configuration
+   - database
+   - accounts
 * Adding Keys 🔑 of QAs and Developers
   - [[./key_request.png]]
 * Codebase Deployment 🚀
-  -  Capistrano /A deployment automation tool built on Ruby, Rake, and SSH/
+  #+BEGIN_QUOTE
+  bundle exec cap deploy production --trace
+  #+END_QUOTE
+  [[./capistrano_deployment.png]]
 * Monitoring zone
-  - Prometheus(open-source systems monitoring and alerting toolkit)
-  - Newrelic(application/sytem level monitoring)
-  - honeybadger(code level error)
-  - grafana(Frontend to visualize time series data)
-  - pager duty(alert system), mail, rocketchat
-  - logentries(centeral log aggregrator)
+  #+ATTR_REVEAL: :frag (roll-in)
+  - [[https://prometheus.io/][Prometheus]]
+  - [[https://newrelic.com/][Newrelic]] 
+  - [[https://www.honeybadger.io/][Honeybadger]]
+  - [[http://grafana.org/][Grafana]]
+  - [[https://logentries.com/][logentries]]
+  - [[http://about:blank][pager duty, email, Rchat]]
 * ⚠ Only Easy Questions ❓
