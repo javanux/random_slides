@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>LifeCycle of an Application</title>
+<meta name="author" content="(Balman Rawat)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/league.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'http://cdn.jsdelivr.net/reveal.js/3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">LifeCycle of an Application</h1><p class="date">Created: 2017-02-01 Wed 15:01</p>
+</section>
+
+<section>
+<section id="slide-orgheadline1">
+<h2 id="orgheadline1">Agenda</h2>
+<ul>
+<li>Planning for the application/server</li>
+<li>Deployment</li>
+<li>Sprouting a application</li>
+<li>Harvesting and Retirement</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline2">
+<h2 id="orgheadline2">Motivation behind Learn after Lunch</h2>
+<ul>
+<li>Raising the Awarness</li>
+<li>Brief explanation on how we build a app/(server)</li>
+<li>Make you guys sleep</li>
+<li>I was forced 🔫 but then I wanted to.<img src="./do_your_work.png" alt="do_your_work.png" /></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline6">
+<h2 id="orgheadline6">Requirements Gathering</h2>
+<div class="outline-text-2" id="text-orgheadline6">
+</div></section>
+<section id="slide-orgheadline3">
+<h3 id="orgheadline3">General Information</h3>
+<ul>
+<li class="fragment roll-in">app/service name</li>
+<li class="fragment roll-in">security groups</li>
+<li class="fragment roll-in">environment</li>
+<li class="fragment roll-in">instance type</li>
+<li class="fragment roll-in">VPC/NonVPC</li>
+<li class="fragment roll-in">ELB</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline4">
+<h3 id="orgheadline4">Ruby Specifications</h3>
+<ul>
+<li>ruby version</li>
+<li>framework</li>
+<li>app server(unicorn,puma)</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline5">
+<h3 id="orgheadline5">system depenencies</h3>
+<ul>
+<li>nodejs (rocketchat)</li>
+<li>imagemagick (mediaengine)</li>
+<li><p>
+libpq-dev
+</p>
+<div class="org-src-container">
+
+<pre  class="fragment (roll-in)">apt show libpq-dev| grep -A5 -i <span style="color: #B6E63E;">'description'</span>
+</pre>
+</div>
+<pre class="example">
+Description: header files for libpq5 (PostgreSQL library)
+ Header files and static library for compiling C programs to link
+ with the libpq library in order to communicate with a PostgreSQL
+ database backend.
+</pre></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline9">
+<h2 id="orgheadline9">YML Conversion</h2>
+<div class="outline-text-2" id="text-orgheadline9">
+</div></section>
+<section id="slide-orgheadline7">
+<h3 id="orgheadline7">vars sections</h3>
+<div class="org-src-container">
+
+<pre  class="src src-yaml"><span style="color: #FD971F;">application</span>: cfclient
+<span style="color: #FD971F;">environments</span>:
+  <span style="color: #FD971F;">production</span>:
+    <span style="color: #FD971F;">url</span>: app.cloudfactory.com
+
+  <span style="color: #FD971F;">staging</span>:
+    <span style="color: #FD971F;">url</span>: rcapp.cloudfactory.com
+
+  <span style="color: #FD971F;">stagingnxt</span>:
+    <span style="color: #FD971F;">url</span>: appnxt.cloudfactory.com
+
+  <span style="color: #FD971F;">sit</span>:
+    <span style="color: #FD971F;">url</span>: sitapp.cloudfactory.com
+
+<span style="color: #FD971F;">ruby_version</span>: 2.3.0
+<span style="color: #FD971F;">dependencies</span>:
+  - nodejs
+  - jq
+  - libpq-dev
+
+<span style="color: #FD971F;">ansicap_deploy_to</span>: <span style="color: #B6E63E;">"/home/deploy/{{application}}"</span>
+<span style="color: #FD971F;">EC2SPIN_ROLE</span>: app
+<span style="color: #FD971F;">EC2SPIN_ENV</span>: staging
+</pre>
+</div>
+</section>
+<section id="slide-orgheadline8">
+<h3 id="orgheadline8">playbook sections</h3>
+<div class="org-src-container">
+
+<pre  class="src src-yaml"><span style="color: #525254;">---</span>
+- <span style="color: #FD971F;">name</span>: From prebaked AMI to full-blown server
+  <span style="color: #FD971F;">hosts</span>: localhost
+  <span style="color: #FD971F;">vars_files</span>:
+    - group_vars/vars/cfclient.yml
+  <span style="color: #FD971F;">roles</span>:
+    - <span style="color: #FD971F;">role</span>: ec2spin
+
+<span style="color: #525254;"># </span><span style="color: #525254;">add key push devops and bot's keys #toallservers :)</span>
+- <span style="color: #FD971F;">include</span>: add_keys.yml new_hosts=spinner
+  <span style="color: #FD971F;">tags</span>:
+    - add_keys
+
+- <span style="color: #FD971F;">name</span>: Start configuring the spinner
+  <span style="color: #FD971F;">hosts</span>: spinner
+
+- <span style="color: #FD971F;">name</span>: Install apt packages/libraries
+  <span style="color: #FD971F;">apt</span>: name={{ item }} state=present update_cache=true
+  <span style="color: #FD971F;">with_items</span>: <span style="color: #B6E63E;">"{{dependencies}}"</span>
+
+  <span style="color: #FD971F;">roles</span>:
+    - <span style="color: #FD971F;">role</span>: chruby
+      <span style="color: #FD971F;">chruby_ruby_version</span>: <span style="color: #B6E63E;">"{{ruby_version}}"</span>
+
+    - <span style="color: #FD971F;">role</span>: nginx
+
+    - <span style="color: #FD971F;">role</span>: runit
+</pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline12">
+<h2 id="orgheadline12">Configuration Part of the CodeBase</h2>
+<div class="outline-text-2" id="text-orgheadline12">
+</div></section>
+<section id="slide-orgheadline10">
+<h3 id="orgheadline10">Gems</h3>
+<ul>
+<li>unicorn</li>
+<li>hutch</li>
+<li>capistrano</li>
+<li>newrelic.. etc</li>
+
+</ul>
+</section>
+<section id="slide-orgheadline11">
+<h3 id="orgheadline11">Yaml files</h3>
+<ul>
+<li>database.yml</li>
+<li>honeybadger.yml</li>
+<li>newrelic.yml</li>
+<li>hutch.yml</li>
+<li>redis.yml.. etc</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline13">
+<h2 id="orgheadline13">Adding Keys 🔑 of QAs and Developers</h2>
+<ul>
+<li><img src="./key_request.png" alt="key_request.png" /></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline14">
+<h2 id="orgheadline14">Codebase Deployment 🚀</h2>
+<ul>
+<li>Capistrano <i>A deployment automation tool built on Ruby, Rake, and SSH</i></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline15">
+<h2 id="orgheadline15">Monitoring zone</h2>
+<ul>
+<li>Prometheus(open-source systems monitoring and alerting toolkit)</li>
+<li>Newrelic(application/sytem level monitoring)</li>
+<li>honeybadger(code level error)</li>
+<li>grafana(Frontend to visualize time series data)</li>
+<li>pager duty(alert system), mail, rocketchat</li>
+<li>logentries(centeral log aggregrator)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline16">
+<h2 id="orgheadline16">⚠ Only Easy Questions ❓</h2>
+</section>
+</section>
+</div>
+</div>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js"></script>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: true,
+keyboard: true,
+overview: true,
+margin: 0.20,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
