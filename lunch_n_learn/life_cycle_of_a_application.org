@@ -23,7 +23,7 @@
    - Framework
    - App Server(unicorn,puma)
    - hutch/sidekiq
-** system depenencies
+** system dependencies
    #+ATTR_REVEAL: :frag (roll-in)
    - ruby
    - imagemagick
@@ -116,6 +116,7 @@
    - hutch.yml
    - redis.yml.. etc
 ** service configuration
+   - dns registration
    - database
    - accounts
 * Adding Keys 🔑 of QAs and Developers
